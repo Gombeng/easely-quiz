@@ -7,15 +7,26 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [questions, setQuestions] = useState<any[]>([])
   const [currentQuestion, setCurrentQuestion] = useState<number>(0)
+
   const [categorys, setCategorys] = useState<any[]>([])
   const [selectCategory, setSelectCategory] = useState<any>('')
   const [score, setScore] = useState<number>(0)
+
   const [results, setResults] = useState(false)
   const [counter, setCounter] = useState<any>(120);
+
   const apiUrl = `https://opentdb.com/api.php?amount=10&category=${selectCategory}&difficulty=easy&type=multiple`;
   const apiUrlCategory = `https://opentdb.com/api_category.php`;
   const renderHTML = (rawHTML: any) => React.createElement("div", { dangerouslySetInnerHTML: { __html: rawHTML } });
 
+  const minutes = Math.floor(counter / 60)
+  const seconds = counter % 60;
+  function padTo2Digits(num: any) {
+    return num.toString().padStart(2, '0');
+  }
+
+  const timer = `${padTo2Digits(minutes)}:${padTo2Digits(seconds)}`;
+  
   useEffect(() => {
     const timer: any = counter > 0 && setInterval(() => setCounter(counter - 1), 1000);
     return () => clearInterval(timer);
@@ -27,7 +38,6 @@ function App() {
     const fetchQuestions = async () => {
       const { data } = await axios.get(`${apiUrl}`)
       setQuestions(data.results)
-      console.log('questions => ', data.results)
       setLoading(false)
     }
     fetchQuestions()
@@ -35,20 +45,12 @@ function App() {
     const fetchCategorys = async () => {
       const { data } = await axios.get(`${apiUrlCategory}`)
       setCategorys(data.trivia_categories)
-      console.log('categorys => ', data)
       setLoading(false)
     }
     fetchCategorys()
   }, [selectCategory])
 
 
-  const minutes = Math.floor(counter / 60)
-  const seconds = counter % 60;
-  function padTo2Digits(num: any) {
-    return num.toString().padStart(2, '0');
-  }
-
-  const timer = `${padTo2Digits(minutes)}:${padTo2Digits(seconds)}`;
 
   const handleCorrect = () => {
 
@@ -77,8 +79,8 @@ function App() {
 
   return (
     <>
-      <div className='flex'>
-        <select onChange={(e) => {
+      <div className='d-grid'>
+        <select className='select-category' onChange={(e) => {
           setSelectCategory(e.target.value)
           setCounter(120)
         }}>

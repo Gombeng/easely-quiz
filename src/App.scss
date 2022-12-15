@@ -1,42 +1,61 @@
 body {
 	background-color: #252525;
-	width: 80%;
+	width: 90%;
+	text-align: center;
 	color: #faf8ff;
 }
 
-select {
-	width: 50%;
+.d-grid {
 	display: grid;
-	place-items: center;
-	background-color: inherit;
-	color: inherit;
-	font-family: inherit;
-	padding: 0.8rem 1rem;
-	border-radius: 0.3rem;
-	cursor: pointer;
-	outline: none;
+	justify-content: space-between;
+	align-items: center;
+	grid-template-areas:
+		's s'
+		'q t';
 
-	option {
-		color: black;
+	@media screen and (min-width: 768px) {
+		grid-template-areas: 's q t';
+	}
+
+	.select-category {
+		width: 100%;
+		display: grid;
+		place-items: center;
+		background-color: inherit;
+		color: inherit;
+		font-family: inherit;
+		padding: 0.8rem 1rem;
+		border-radius: 0.3rem;
+		cursor: pointer;
+		outline: none;
+		grid-area: s;
+
+		option {
+			color: black;
+		}
+	}
+
+	.question-left {
+		grid-area: q;
+	}
+
+	.time-left {
+		grid-area: t;
 	}
 }
 
-.flex{
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-
-.final-results{
-	text-align: center;
+.final-results {
 	padding: 1rem;
 	margin: 1rem auto;
 	background-color: #007d5c;
 	color: #f5f5f5;
-	width: 700px;
 	border-radius: 0.3rem;
 
-	button{
+	@media screen and (min-width: 768px) {
+		width: 700px;
+	}
+
+	button {
 		all: unset;
 		padding: 1rem;
 		margin: 0.5rem;
@@ -52,28 +71,32 @@ select {
 }
 
 .quiz-container {
-	width: 700px;
+	@media screen and (min-width: 768px) {
+		width: 700px;
+	}
 	.quiz {
 		padding: 1rem;
 		margin: 1rem auto;
-		background-color: #007d5c;
 		color: #f5f5f5;
-		width: 100%;
+		background-color: #007d5c;
 		border-radius: 0.3rem;
 	}
 
-	.question{
-		text-align: center;
+	.question {
+		margin-bottom: 2rem;
 	}
 
 	.options-container {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
 		padding: 0;
 
+		@media screen and (min-width: 768px) {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+		}
+
 		.option {
-			padding: 1rem;
-			margin: 0.5rem;
+			padding: .5rem;
+			margin: .8rem;
 			background: #252525;
 			border-radius: 0.3rem;
 			cursor: pointer;
