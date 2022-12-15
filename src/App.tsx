@@ -11,10 +11,15 @@ function App() {
   const [selectCategory, setSelectCategory] = useState<any>('')
   const [score, setScore] = useState<number>(0)
   const [results, setResults] = useState(false)
-
-  const apiUrl = `https://opentdb.com/api.php?amount=5&category=${selectCategory}&difficulty=easy&type=multiple`;
+  const [counter, setCounter] = useState<any>(120);
+  const apiUrl = `https://opentdb.com/api.php?amount=10&category=${selectCategory}&difficulty=easy&type=multiple`;
   const apiUrlCategory = `https://opentdb.com/api_category.php`;
   const renderHTML = (rawHTML: any) => React.createElement("div", { dangerouslySetInnerHTML: { __html: rawHTML } });
+
+  useEffect(() => {
+    const timer: any = counter > 0 && setInterval(() => setCounter(counter - 1), 1000);
+    return () => clearInterval(timer);
+  }, [counter]);
 
   useEffect(() => {
     setLoading(true)
@@ -25,7 +30,6 @@ function App() {
       console.log('questions => ', data.results)
       setLoading(false)
     }
-
     fetchQuestions()
 
     const fetchCategorys = async () => {
@@ -34,9 +38,17 @@ function App() {
       console.log('categorys => ', data)
       setLoading(false)
     }
-
     fetchCategorys()
   }, [selectCategory])
+
+
+  const minutes = Math.floor(counter / 60)
+  const seconds = counter % 60;
+  function padTo2Digits(num: any) {
+    return num.toString().padStart(2, '0');
+  }
+
+  const timer = `${padTo2Digits(minutes)}:${padTo2Digits(seconds)}`;
 
   const handleCorrect = () => {
 
@@ -47,6 +59,7 @@ function App() {
       setResults(true);
     }
   }
+
   const handleInCorrect = () => {
     if (currentQuestion + 1 < questions.length) {
       setCurrentQuestion(currentQuestion + 1);
@@ -55,40 +68,43 @@ function App() {
     }
   }
 
-
-  /* Resets the game back to default */
   const restartGame = () => {
     setScore(0);
     setCurrentQuestion(0);
     setResults(false);
-    // setLoading(true)
+    setCounter(120)
   };
 
   return (
     <>
       <div className='flex'>
-        <select onChange={(e) => setSelectCategory(e.target.value)}>
+        <select onChange={(e) => {
+          setSelectCategory(e.target.value)
+          setCounter(120)
+        }}>
           {
             categorys.map(({ id, name }) => (
               <option key={id} value={id}>{name}</option>
             )
             )}
         </select>
-        <div className="questions-left">
-          <h3>
-            Questions: {currentQuestion + 1} - {questions.length}
-          </h3>
-        </div>
+        <h3 className="questions-left">
+          Q: {currentQuestion + 1} - {questions.length}
+        </h3>
+        <h3 className="time-left">
+          T: {timer}
+        </h3>
+
       </div>
       {
         loading ? <h3>Loading...</h3> :
-          results ?
+          results || !counter ?
             <div className="final-results">
               <h3>Final Results</h3>
-              <p>Iron Man 5/5</p>
-              <p>Spiderman 5/5</p>
-              <p>I'm Batman 5/5</p>
-              <p>You {score}/{questions.length}</p>
+              <p>Iron Man 10/10 (100%)</p>
+              <p>Spiderman 10/10 (100%)</p>
+              <p>I'm Batman 10/10 (100%)</p>
+              <p>You {score}/{questions.length} ({(score / questions.length) * 100}%)</p>
               <button onClick={() => restartGame()}>Restart game</button>
             </div>
             :
@@ -100,8 +116,8 @@ function App() {
                   </h3>
 
                   <ul className="options-container">
-                    <li onClick={() => handleCorrect()} className='option'>{renderHTML(questions[currentQuestion]?.correct_answer)}</li>
                     <li onClick={() => handleInCorrect()} className='option'>{renderHTML(questions[currentQuestion]?.incorrect_answers[0])}</li>
+                    <li onClick={() => handleCorrect()} className='option'>{renderHTML(questions[currentQuestion]?.correct_answer)}</li>
                     <li onClick={() => handleInCorrect()} className='option'>{renderHTML(questions[currentQuestion]?.incorrect_answers[1])}</li>
                     <li onClick={() => handleInCorrect()} className='option'>{renderHTML(questions[currentQuestion]?.incorrect_answers[2])}</li>
                   </ul>
